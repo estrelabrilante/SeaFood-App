@@ -38,15 +38,26 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     }
     //CIImage passed into this func
     func detect(image: CIImage){
+        //load up our Model using InceptionV3 model
        guard let model = try? VNCoreMLModel(for: Inceptionv3().model)
                 else
         {fatalError("loading CoreMl is failed")}
+        //create request to classify the data passed in
         let request = VNCoreMLRequest(model: model) { request, error in
             guard let results = request.results as? [VNClassificationObservation] else{
                 fatalError(
                 "Model failed to process data")
             }
             print(results)
+            //change titleBar of navigationitem
+            if let firstResult = results.first{
+                if firstResult.identifier.contains("Waterfall"){
+                    self.navigationItem.title = "Waterfall"
+                }else{
+                    self.navigationItem.title = "Not hotdog"
+                    
+                }
+            }
         }
         let handler = VNImageRequestHandler(ciImage: image)
         do{
